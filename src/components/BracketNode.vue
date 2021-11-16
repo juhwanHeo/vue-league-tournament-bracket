@@ -107,7 +107,6 @@
     .vtb-item p {
         padding: 20px;
         margin: 0;
-        background-color: #999999;
     }
 
     .vtb-item-parent {
@@ -130,7 +129,7 @@
 
     .vtb-item-players {
         flex-direction: column;
-        background-color: #999999;
+        background-color: #27282d;
         margin: 0;
         color: white;
     }
@@ -152,21 +151,27 @@
     }
 
     .vtb-item-players .winner.highlight {
-        color: white;
+        color: rgba(255, 255, 255, 0.829);
+        font-size: 1.1em;
+        font-weight: bold;
         background-color: #06d6a0;
-        border: 3px solid #27282d;
+        /* border: 3px solid #27282d; */
     }
 
     .vtb-item-players .defeated.highlight {
-        color: white;
-        background-color: #ef476f;
-        border: 3px solid #27282d;
+        color: #d6d6d6;
+        font-size: 1.1em;
+        font-weight: bold;
+        background-color: #ef476ece;    /* #ef476f */
+        /* border: 3px solid #27282d; */
     }
 
     .vtb-item-players .no-class.highlight {
-        color: white;
+        color: #d6d6d6;
+        font-size: 1.1em;
+        font-weight: bold;
         background-color: #FFC107;
-        border: 3px solid #27282d;
+        /* border: 3px solid #27282d; */
     }
 
     .vtb-item-parent:after {
