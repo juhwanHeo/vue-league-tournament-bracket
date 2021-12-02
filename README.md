@@ -17,7 +17,7 @@ npm run serve
   
 2, 디자인 수정
   
-```html
+```js
     const rounds = [
         //Quarter
         {
