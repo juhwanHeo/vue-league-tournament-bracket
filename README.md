@@ -16,7 +16,6 @@ yarn serve
 1, 점수 표기 추가
 
 2, 디자인 수정
-
 ```js
     const rounds = [
         //Quarter
