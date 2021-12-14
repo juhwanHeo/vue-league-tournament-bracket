@@ -3,21 +3,21 @@
   * [original]( https://github.com/kamilwylegala/vue-tournament-bracket ) Github
 
   * [league]( https://hleague.hallym.ac.kr:2443/ ) 에 `적용 예정`
-  
+
 ## Development
 
 Checkout repository and:
 ```
-npm install
-npm run serve
+npm install yarn
+yarn serve
 ```
 
 ## Change
-1, 점수 표기 추가  
-  
+1, 점수 표기 추가
+
 2, 디자인 수정
-  
-```html
+
+```js
     const rounds = [
         //Quarter
         {
@@ -48,8 +48,8 @@ npm run serve
                     player2: { id: "4", name: "Competitor 4", winner: true, score: 1 }
                 },
                 {
-                    player1: { id: "5", name: "Competitor 5", winner: false, score: 3 },
-                    player2: { id: "8", name: "Competitor 8", winner: true, score: 2 }
+                    player1: { id: "5", name: "Competitor 5", winner: null, score: 0 },
+                    player2: { id: "8", name: "Competitor 8", winner: null, score: 0 }
                 }
             ]
         },
