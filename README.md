@@ -16,6 +16,19 @@ yarn serve
 1, 점수 표기 추가
 
 2, 디자인 수정
+
+## Ex 
+
+
+### IMG
+
+![LeagueInfo1](https://user-images.githubusercontent.com/47820142/145952772-5abe67d9-cd17-4041-ab02-8cf3edc79c8f.PNG)
+
+(Mouse Hover)  
+![LeagueInfo2](https://user-images.githubusercontent.com/47820142/145952810-37313667-caa5-47a6-bb57-1eb4db789323.PNG)
+
+
+### DATA
 ```js
     const rounds = [
         //Quarter
@@ -63,5 +76,6 @@ yarn serve
         }
     ];
 ```
+
 # LICENSE
 `MIT License`
