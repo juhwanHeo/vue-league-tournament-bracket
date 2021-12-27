@@ -12,13 +12,12 @@
                 sm="6">
                 <v-select
                     class="league-match-select"
-                    :loading="isLoading"
-                    v-model="leagueDefault"
+                    :loading="isLeagueLoading"
+                    v-model="leagueSelect"
                     :items="leagueItems"
                     item-text="leag_nm"
                     item-value="leag_no"
                     label="League"
-                    @input="getGames"
                     outlined
                 />
             </v-col>
@@ -28,13 +27,12 @@
                 sm="6">
                 <v-select
                     class="league-match-select"
-                    :loading="isLoading"
-                    v-model="gameDefault"
+                    :loading="isGameLoading"
+                    v-model="gameSelect"
                     :items="gameItems"
                     item-text="game_nm"
                     item-value="game_no"
                     label="Game"
-                    @input="getGameInfo"
                     outlined
                 />
             </v-col>
@@ -91,6 +89,7 @@
 </style>
 <script>
     import Bracket from "./Bracket";
+    import axios from 'axios'
 
     const rounds = [
         //Quarter
@@ -230,17 +229,19 @@
         },
         data() {
             return {
-                leagueDefault: '202101',
-                gameDefault: '202101002',
+                leagueSelect: null,
+                gameSelect: null,
                 leagueItems: [],
                 gameItems: [],
-                rounds: [
-                ],
+                rounds: [],
                 leag_no: null,
                 game_no: null,
-                loading: null,
-                isLoading: true
+                isLeagueLoading: true,
+                isGameLoading: false
             };
+        },
+        mounted() {
+            this.init();
         },
         computed: {
             getGameItems() {
@@ -250,61 +251,55 @@
                 return this.rounds;
             }
         },
-        mounted() {
-            this.init();
+        watch: {
+            leagueSelect: function(val) {
+                this.getGames(val);
+            },
+            gameSelect:function(val) {
+                this.getGameInfo(val);
+            }
         },
         methods: {
             init() {
-                this.loading = setInterval(this.getLeagues, 1000);
-
+                this.getLeagues();
             },
             async getLeagues() {
-                // await axios.get(`https://hleague.hallym.ac.kr:2443/api/leagues/`)
-                //     .then((result) => {
-                //         console.log(result);
-                //         this.leagueItems = result.data.data;
+                this.isLeagueLoading = true;
+                await axios.get(`/api/leagues`)
+                    .then((result) => {
+                        console.log("leages: " + result);
+                        this.leagueItems = result.data.data;
+                        this.leagueSelect = this.leagueItems[0].leag_no;
+                        console.log("leagueSelect : " + this.leagueSelect);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    })
 
-                //     })
-                //     .catch((err) => {
-                //         console.log(err);
-                //     })
-
-                    this.leagueItems = [
-                        {leag_nm : '2021 Intramural leagueue', leag_no : '202101'},
-                        {leag_nm : '2022 Intramural leagueue Spring', leag_no : '202201'}
-                    ];
-
-                    this.gameItems =  [
-                        {game_nm : '축구', game_no : '202101001'},
-                        {game_nm : '농구', game_no : '202101002'},
-                        {game_nm : '야구', game_no : '202101003'}
-                    ]
-
-                this.isLoading = false;
-                clearInterval(this.loading);
-
+                this.isLeagueLoading = false;
             },
 
             async getGames(leag_no) {
-                console.log('getGames!!: ' + leag_no);
-                console.log(`leag_no: ${leag_no}`);
+                this.isGameLoading = true;
                 this.leag_no = leag_no;
-                // await axios.get(`https://hleague.hallym.ac.kr:2443/api/leagues/${this.league_no}`)
-                //     .then((result) => {
-                //         console.log(result);
-                //         this.gameItems = result.data.data.game_no;
-                //     })
-                //     .catch((err) => {
-                //         console.log(err);
-                //     })
+
+                await axios.get(`/api/leagues/${leag_no}/games`)
+                    .then((result) => {
+                        console.log("games: " + result);
+                        this.gameItems = result.data.data;
+                        this.gameSelect = this.gameItems[0].game_no;
+                        console.log("gameSelect : " + this.gameSelect);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    })
+
+                this.isGameLoading = false;
 
             },
 
             async getGameInfo(game_no) {
-                console.log('getGameInfo!!: ' + game_no);
-                console.log(`game_no: ${game_no}`);
                 this.game_no = game_no;
-
                 this.rounds = [
                         {
                             heading: 'leagueue Match',
@@ -317,14 +312,14 @@
                         }
                     ];
 
-                // await axios.get(`https://hleague.hallym.ac.kr:2443/api/leagues/${this.league_no}/games/${this.game_no}`)
-                //     .then((result) => {
-                //         console.log(result);
-                //         this.gameInfo = result.data.data;
-                //     })
-                //     .catch((err) => {
-                //         console.log(err);
-                //     })
+                await axios.get(`/api/leagues/${this.league_no}/games/${this.game_no}`)
+                    .then((result) => {
+                        console.log(result);
+                        this.gameInfo = result.data.data;
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    })
             },
     }
     };
