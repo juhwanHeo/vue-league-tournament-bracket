@@ -151,7 +151,7 @@
 
     .vtb-item-players .winner.highlight {
         color: rgba(255, 255, 255, 0.829);
-        font-size: 1.1em;
+        font-size: 1.3em;
         font-weight: bold;
         background-color: #06d6a0;
         /* border: 3px solid #27282d; */
@@ -159,15 +159,15 @@
 
     .vtb-item-players .defeated.highlight {
         color: #d6d6d6;
-        font-size: 1.1em;
+        font-size: 1.3em;
         font-weight: bold;
         background-color: #ef476ece;    /* #ef476f */
         /* border: 3px solid #27282d; */
     }
 
     .vtb-item-players .no-class.highlight {
-        color: #d6d6d6;
-        font-size: 1.1em;
+        color: #27282d;
+        font-size: 1.3em;
         font-weight: bold;
         background-color: #FFC107;
         /* border: 3px solid #27282d; */

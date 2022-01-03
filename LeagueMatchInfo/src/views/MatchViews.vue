@@ -43,7 +43,7 @@
         </v-row>
         <v-row>
             <v-col
-                v-for="(item, i) in getRounds"
+                v-for="(item, i) in rounds"
                 :key="i"
                 cols="12"
             >
@@ -59,7 +59,7 @@
                                 class="card-bracket"
                                 :rounds="item.round">
                                 <template #player="{ player }">
-                                    {{ player.name }}
+                                    {{ player.name ? player.name : "미정" }}
                                 </template>
 
                             <!-- <template #player-extension-bottom="{ match }">
@@ -137,91 +137,6 @@
         }
     ];
 
-    const rounds2 = [
-        //16 gang
-        {
-            games: [
-                {
-                    player1: { id: "1", name: "Competitor 1", winner: true, score: 3 },
-                    player2: { id: "2", name: "Competitor 2", winner: false, score: 1 }
-                },
-                {
-                    player1: { id: "3", name: "Competitor 3", winner: false, score: 0 },
-                    player2: { id: "4", name: "Competitor 4", winner: true, score: 1 }
-                },
-                {
-                    player1: { id: "5", name: "Competitor 5", winner: true, score: 4 },
-                    player2: { id: "6", name: "Competitor 6", winner: false, score: 2 }
-                },
-                {
-                    player1: { id: "7", name: "Competitor 7", winner: false, score: 1 },
-                    player2: { id: "8", name: "Competitor 8", winner: true, score: 3 }
-                },
-                {
-                    player1: { id: "9", name: "Competitor 9", winner: true, score: 3 },
-                    player2: { id: "10", name: "Competitor 10", winner: false, score: 1 }
-                },
-                {
-                    player1: { id: "11", name: "Competitor 11", winner: false, score: 0 },
-                    player2: { id: "12", name: "Competitor 12", winner: true, score: 1 }
-                },
-                {
-                    player1: { id: "13", name: "Competitor 13", winner: true, score: 4 },
-                    player2: { id: "14", name: "Competitor 14", winner: false, score: 2 }
-                },
-                {
-                    player1: { id: "15", name: "Competitor 15", winner: false, score: 1 },
-                    player2: { id: "16", name: "Competitor 16", winner: true, score: 3 }
-                }
-            ]
-        },
-        //Quarter
-        {
-            games: [
-                {
-                    player1: { id: "1", name: "Competitor 1", winner: false, score: 0 },
-                    player2: { id: "4", name: "Competitor 4", winner: true, score: 1 },
-                },
-                {
-
-                    player1: { id: "5", name: "Competitor 5", winner: false, score: 3 },
-                    player2: { id: "8", name: "Competitor 8", winner: true, score: 2 }
-                },
-                {
-
-                    player1: { id: "9", name: "Competitor 9", winner: false, score: 3 },
-                    player2: { id: "12", name: "Competitor 12", winner: true, score: 2 },
-                },
-                {
-                    player1: { id: "13", name: "Competitor 13", winner: false, score: 3 },
-                    player2: { id: "16", name: "Competitor 16", winner: true, score: 2 }
-                }
-            ]
-        },
-        //Semi
-        {
-            games: [
-                {
-                    player1: { id: "4", name: "Competitor 4", winner: false, score: 0 },
-                    player2: { id: "8", name: "Competitor 8", winner: true, score: 1 }
-                },
-                {
-                    player1: { id: "12", name: "Competitor 12", winner: null, score: 0 },
-                    player2: { id: "16", name: "Competitor 16", winner: null, score: 0 }
-                }
-            ]
-        },
-        //Final
-        {
-            games: [
-                {
-                    player1: { id: "8", name: "Competitor 8", winner: null, score: 0 },
-                    player2: { id: null, name: "미정", winner: null, score: 0 }
-                }
-            ]
-        }
-    ];
-
     export default {
         name: "matchViews",
         components: {
@@ -233,29 +148,22 @@
                 gameSelect: null,
                 leagueItems: [],
                 gameItems: [],
-                rounds: [],
+                rounds: null,
                 leag_no: null,
                 game_no: null,
                 isLeagueLoading: true,
-                isGameLoading: false
+                isGameLoading: false,
+                isMatchesLoading: true
             };
         },
         mounted() {
             this.init();
         },
-        computed: {
-            getGameItems() {
-                return this.gameItems;
-            },
-            getRounds() {
-                return this.rounds;
-            }
-        },
         watch: {
             leagueSelect: function(val) {
                 this.getGames(val);
             },
-            gameSelect:function(val) {
+            gameSelect: function(val) {
                 this.getGameInfo(val);
             }
         },
@@ -300,22 +208,19 @@
 
             async getGameInfo(game_no) {
                 this.game_no = game_no;
-                this.rounds = [
-                        {
-                            heading: 'leagueue Match',
-                            round: rounds2,
-                        },
+                this.isMatchesLoading = true;
 
-                        {
-                            heading: 'leagueue Match',
-                            round: rounds
-                        }
-                    ];
-
-                await axios.get(`/api/leagues/${this.league_no}/games/${this.game_no}`)
+                await axios.get(`/api/leagues/${this.leag_no}/games/${this.game_no}/matches`)
                     .then((result) => {
-                        console.log(result);
-                        this.gameInfo = result.data.data;
+                        console.log(JSON.stringify(result.data.data));
+                        this.rounds = [
+                            {
+                                heading: 'leagueue Match',
+                                round: result.data.data
+                            }
+                        ]
+
+                        this.isMatchesLoading = false;
                     })
                     .catch((err) => {
                         console.log(err);
