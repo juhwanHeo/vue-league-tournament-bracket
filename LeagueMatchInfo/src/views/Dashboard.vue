@@ -431,12 +431,19 @@
         ],
       },
     }),
-
+    mounted() {
+        this.init();
+    },
     computed: {
       sales: get('sales/sales'),
       totalSales () {
         return this.sales.reduce((acc, val) => acc + val.salesInM, 0)
       },
     },
+    methods: {
+      init() {
+          alert('리그 통계 준비중 입니다. \nPreparing to open the League Statistics. ')
+      },
+    }
   }
 </script>

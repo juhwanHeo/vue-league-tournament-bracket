@@ -39,15 +39,64 @@
 
         </v-row>
 
-        <v-row>
-        </v-row>
+        <!-- League Rank -->
         <v-row>
             <v-col
-                v-for="(item, i) in rounds"
-                :key="i"
                 cols="12"
             >
                 <material-card
+                    v-for="(lvl, index) in ranking"
+                    :key="index"
+                    heading="League Ranking"
+                    color="accent"
+                    >
+                    <v-card-text>
+                        <material-card
+                            v-for="(group, index2) in lvl"
+                            :key="index2"
+                            :heading="getChar(index2) + ` Group`"
+                            color="#9C27b0"
+                            >
+                            <v-card-text>
+                                <v-sheet
+                                    class="card-text-sheet"
+                                    color="dark">
+
+                                    <v-data-table
+                                        dark
+                                        :headers="headers"
+                                        :items="group"
+                                        :items-per-page="30"
+                                        hide-default-footer
+                                        class="elevation-1"
+                                    >
+                                    <template v-slot:[`item.rank`]="{ item }">
+                                        <v-chip
+                                            :color="getColor(item.rank)"
+                                            dark
+                                        >
+                                            {{ item.rank }}
+                                        </v-chip>
+                                        </template>
+                                    </v-data-table>
+                                </v-sheet>
+                            </v-card-text>
+                        </material-card>
+                    </v-card-text>
+                </material-card>
+
+
+            </v-col>
+        </v-row>
+
+        <!-- Tournament -->
+        <v-row>
+            <v-col
+                cols="12"
+            >
+                <material-card
+                    v-for="(item, index) in rounds"
+                    :key="index"
                     :heading="item.heading"
                     color="accent"
                 >
@@ -91,52 +140,6 @@
     import Bracket from "./Bracket";
     import axios from 'axios'
 
-    const rounds = [
-        //Quarter
-        {
-            games: [
-                {
-                    player1: { id: "1", name: "Competitor 1", winner: true, score: 3 },
-                    player2: { id: "2", name: "Competitor 2", winner: false, score: 1 }
-                },
-                {
-                    player1: { id: "3", name: "Competitor 3", winner: false, score: 0 },
-                    player2: { id: "4", name: "Competitor 4", winner: true, score: 1 }
-                },
-                {
-                    player1: { id: "5", name: "Competitor 5", winner: true, score: 4 },
-                    player2: { id: "6", name: "Competitor 6", winner: false, score: 2 }
-                },
-                {
-                    player1: { id: "7", name: "Competitor 7", winner: false, score: 1 },
-                    player2: { id: "8", name: "Competitor 8", winner: true, score: 3 }
-                }
-            ]
-        },
-        //Semi
-        {
-            games: [
-                {
-                    player1: { id: "1", name: "Competitor 1", winner: false, score: 0 },
-                    player2: { id: "4", name: "Competitor 4", winner: true, score: 1 }
-                },
-                {
-                    player1: { id: "5", name: "Competitor 5", winner: null, score: 0 },
-                    player2: { id: "8", name: "Competitor 8", winner: null, score: 0 }
-                }
-            ]
-        },
-        //Final
-        {
-            games: [
-                {
-                    player1: { id: "4", name: "Competitor 4", winner: null, score: 0 },
-                    player2: { id: null, name: "미정", winner: null, score: 0 }
-                }
-            ]
-        }
-    ];
-
     export default {
         name: "matchViews",
         components: {
@@ -153,7 +156,19 @@
                 game_no: null,
                 isLeagueLoading: true,
                 isGameLoading: false,
-                isMatchesLoading: true
+                isMatchesLoading: true,
+                headers: [
+                    { text: 'Ranking ', value: 'rank' },
+                    { text: 'Team Name', align: 'start', value: 'team_nm' },
+                    { text: '승 (횟수)', value: 'win_cnt' },
+                    { text: '패 (횟수)', value: 'loss_cnt' },
+                    { text: '무승부 (횟수)', value: 'draw_cnt' },
+                    { text: '승점', value: 'win_score' },
+                    { text: '득실차', value: 'goal_diff' }
+                ],
+
+                ranking: []
+
             };
         },
         mounted() {
@@ -170,6 +185,22 @@
         methods: {
             init() {
                 this.getLeagues();
+            },
+            getChar(val) {
+                return String.fromCharCode(val + 65);
+            },
+            getColor (rank) {
+                console.log('rank: ' + rank)
+                let color;
+
+                switch (rank) {
+                    case 1 : color = 'red'; break;
+                    case 2 : color = 'orange'; break;
+                    case 3 : color = 'green'; break;
+                    default : color = 'gray';
+                }
+
+                return color;
             },
             async getLeagues() {
                 this.isLeagueLoading = true;
@@ -213,12 +244,13 @@
                 await axios.get(`/api/leagues/${this.leag_no}/games/${this.game_no}/matches`)
                     .then((result) => {
                         console.log(JSON.stringify(result.data.data));
-                        this.rounds = [
-                            {
-                                heading: 'leagueue Match',
-                                round: result.data.data
-                            }
-                        ]
+                        this.rounds = [{
+                                heading: 'Tournament Match',
+                                round: result.data.data.tm
+                            }]
+
+                        this.ranking = result.data.data.rankList;
+
 
                         this.isMatchesLoading = false;
                     })

@@ -28,9 +28,14 @@
 
     <default-go-home />
 
+
+
     <!-- <default-notifications /> -->
 
     <default-account />
+
+
+    <default-go-github />
   </v-app-bar>
 </template>
 
@@ -54,6 +59,11 @@
         /* webpackChunkName: "default-go-home" */
         './widgets/GoHome'
       ),
+      DefaultGoGithub: () => import(
+        /* webpackChunkName: "default-go-gitHub" */
+        './widgets/GoGitHub'
+      )
+      ,
       DefaultNotifications: () => import(
         /* webpackChunkName: "default-notifications" */
         './widgets/Notifications'
