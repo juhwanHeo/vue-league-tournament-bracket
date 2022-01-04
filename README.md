@@ -1,8 +1,16 @@
 # vue-league-tournament-bracket
 
   * [original]( https://github.com/kamilwylegala/vue-tournament-bracket ) Github
+  * [league]( https://hleague.hallym.ac.kr:2443/ ) 에 바로가기 링크 추가
+  * [테스트 사이트](http://hleague.hallym.ac.kr:23003/components/matchViews/) `22.01.04 ~ 22.01.31` (테스트 기간)
 
-  * [league]( https://hleague.hallym.ac.kr:2443/ ) 에 `적용 예정`
+## File
+
+### ChangeOriginalBraket
+  - original 디자인에서 색상 및 디자인을 변경한 파일
+
+### LeagueMatchInfo
+  - 테스트 사이트에 적용한 파일
 
 ## Development
 
@@ -12,21 +20,15 @@ npm install yarn
 yarn serve
 ```
 
-## Change
-1, 점수 표기 추가
-
-2, 디자인 수정
+## API
+* [API README](https://github.com/juhwanHeo/vue-league-tournament-bracket/blob/main/api/README.md)
 
 ## Ex 
-
-
 ### IMG
-
 ![LeagueInfo1](https://user-images.githubusercontent.com/47820142/145952772-5abe67d9-cd17-4041-ab02-8cf3edc79c8f.PNG)
 
 (Mouse Hover)  
 ![LeagueInfo2](https://user-images.githubusercontent.com/47820142/145952810-37313667-caa5-47a6-bb57-1eb4db789323.PNG)
-
 
 ### DATA
 ```js
