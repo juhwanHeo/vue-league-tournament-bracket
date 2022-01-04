@@ -1,4 +1,4 @@
-# RestLeague ( `/api/leagues/{leag_no}/games/{game_no}/matches` )
+## RestLeague (`/api/leagues/{leag_no}/games/{game_no}/matches`)
 ## Request Method: `GET`
 ## PathVariable: `leag_no`, `game_no`
 ## Ex) `get: /api/leagues/202101/games/202101001/matches`
