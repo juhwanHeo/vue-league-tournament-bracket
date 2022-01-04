@@ -21,7 +21,7 @@ yarn serve
 ```
 
 ## API
-* [API README](https://github.com/juhwanHeo/vue-league-tournament-bracket/blob/main/api/README.md)
+* [API README](https://github.com/juhwanHeo/vue-league-tournament-bracket/tree/main/api)
 
 ## Ex 
 ### IMG
