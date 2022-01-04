@@ -1,4 +1,4 @@
-# Bus_Log ( `/api/leagues` )
+# RestLeague ( `/api/leagues` )
 ## Request Method: `GET`
 ## Ex) `get: /api/leagues`
 - get: /api/leagues

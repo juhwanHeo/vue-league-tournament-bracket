@@ -1,4 +1,4 @@
-# Bus_Log ( `/api/leagues/{leag_no}/games` )
+# RestLeague ( `/api/leagues/{leag_no}/games` )
 ## Request Method: `GET`
 ## PathVariable: `leag_no`
 ## Ex) `get: /api/leagues/202101/games`
