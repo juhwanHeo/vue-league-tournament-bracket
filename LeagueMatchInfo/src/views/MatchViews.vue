@@ -240,14 +240,18 @@
             async getGameInfo(game_no) {
                 this.game_no = game_no;
                 this.isMatchesLoading = true;
+                this.rounds = null;
+                this.rank = null;
 
                 await axios.get(`/api/leagues/${this.leag_no}/games/${this.game_no}/matches`)
                     .then((result) => {
                         console.log(JSON.stringify(result.data.data));
-                        this.rounds = [{
-                                heading: 'Tournament Match',
-                                round: result.data.data.tm
-                            }]
+                        if (result.data.data.tm) {
+                            this.rounds = [{
+                                    heading: 'Tournament Match',
+                                    round: result.data.data.tm
+                                }]
+                        }
 
                         this.ranking = result.data.data.rankList;
 
