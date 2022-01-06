@@ -8,7 +8,7 @@
 
     <default-footer />
 
-    <default-settings />
+    <!-- <default-settings /> -->
   </v-app>
 </template>
 
