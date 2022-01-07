@@ -6,7 +6,6 @@ module.exports = {
           // target: 'http://localhost:3003'
 
           // 운영 서버
-
           target: 'http://localhost:23003'
           // target: 'http://hleague.hallym.ac.kr:23003'
       }

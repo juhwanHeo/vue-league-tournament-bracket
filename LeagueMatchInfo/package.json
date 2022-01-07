@@ -10,6 +10,7 @@
     "postversion": "node scripts/postversion.js"
   },
   "dependencies": {
+    "@kurkle/color": "^0.1.9",
     "axios": "^0.24.0",
     "chart.js": "2",
     "sass-migrator": "^1.5.3",
