@@ -5,6 +5,7 @@
         fluid
         tag="section"
     >
+        <div> width: {{width}}, height: {{height}}</div>
         <v-row
             align="center">
             <v-col
@@ -12,8 +13,8 @@
                 sm="6">
                 <v-select
                     class="league-match-select"
-                    :loading="isLeagueLoading"
                     v-model="leagueSelect"
+                    :loading="isLeagueLoading"
                     :items="leagueItems"
                     item-text="leag_nm"
                     item-value="leag_no"
@@ -27,8 +28,8 @@
                 sm="6">
                 <v-select
                     class="league-match-select"
-                    :loading="isGameLoading"
                     v-model="gameSelect"
+                    :loading="isGameLoading"
                     :items="gameItems"
                     item-text="game_nm"
                     item-value="game_no"
@@ -84,8 +85,6 @@
                         </material-card>
                     </v-card-text>
                 </material-card>
-
-
             </v-col>
         </v-row>
 
@@ -93,6 +92,7 @@
         <v-row>
             <v-col
                 cols="12"
+                v-if="width >= 1315"
             >
                 <material-card
                     v-for="(item, index) in rounds"
@@ -119,6 +119,12 @@
                     </v-card-text>
                 </material-card>
             </v-col>
+
+            <v-col
+                cols="12"
+                v-else
+            >
+            </v-col>
         </v-row>
     </v-container>
 </template>
@@ -132,8 +138,11 @@
 
     .card-bracket {
         padding: 10px;
-        /* background-image: url('~@/assets/hallym-symbol-ui-mark.png');
-        background-position: center; */
+        /*
+        background-image: url('~@/assets/hallym-symbol-ui-mark.png');
+        background-position: center;
+        */
+
     }
 </style>
 <script>
@@ -167,12 +176,19 @@
                     { text: '득실차', value: 'goal_diff' }
                 ],
 
-                ranking: []
+                ranking: [],
+                width: window.innerWidth,
+                height: window.innerHeight
 
             };
         },
         mounted() {
             this.init();
+
+            window.addEventListener('resize', this.handleResize);
+        },
+        beforeDestory() {
+            window.removeEventListener('resize', this.handleResize);
         },
         watch: {
             leagueSelect: function(val) {
@@ -186,11 +202,14 @@
             init() {
                 this.getLeagues();
             },
+            handleResize(event) {
+                this.width = window.innerWidth;
+                this.height = window.innerHeight;
+            },
             getChar(val) {
                 return String.fromCharCode(val + 65);
             },
             getColor (rank) {
-                console.log('rank: ' + rank)
                 let color;
 
                 switch (rank) {
@@ -217,7 +236,6 @@
 
                 this.isLeagueLoading = false;
             },
-
             async getGames(leag_no) {
                 this.isGameLoading = true;
                 this.leag_no = leag_no;
@@ -236,7 +254,6 @@
                 this.isGameLoading = false;
 
             },
-
             async getGameInfo(game_no) {
                 this.game_no = game_no;
                 this.isMatchesLoading = true;
@@ -262,6 +279,6 @@
                         console.log(err);
                     })
             },
-    }
+        }
     };
 </script>
