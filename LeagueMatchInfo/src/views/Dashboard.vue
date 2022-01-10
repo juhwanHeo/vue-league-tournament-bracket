@@ -270,13 +270,13 @@
         await axios.get(`/api/leagues/${leag_no}/statistics`)
             .then((result) => {
                 const gameStartHour = result.data.data.gameStartHour;
-                const aranaUseCount = result.data.data.aranaUseCount;
-                const participationRate = result.data.data.participationRate;
+                const arenaUseCount = result.data.data.arenaUseCount;
+                const attendanceRate = result.data.data.attendanceRate;
                 const gameAvgAttend = result.data.data.gameAvgAttend;
 
-                this.arenaData = this.getBarChartData(aranaUseCount.labels, aranaUseCount.data, false);
+                this.arenaData = this.getBarChartData(arenaUseCount.labels, arenaUseCount.data, false);
                 //'doughnut, pie'
-                this.attendData = this.getCicleChartData(participationRate.labels, participationRate.data, 'pie', false);
+                this.attendData = this.getCicleChartData(attendanceRate.labels, attendanceRate.data, 'pie', false);
                 this.gameAvgAttendData = this.getBarChartData(gameAvgAttend.labels, gameAvgAttend.data, false);
                 this.startTimeData = this.getLineChartData(gameStartHour.labels, gameStartHour.data);
             })

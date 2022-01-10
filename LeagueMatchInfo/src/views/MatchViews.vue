@@ -88,11 +88,10 @@
             </v-col>
         </v-row>
 
-        <!-- Tournament -->
+        <!-- Tournament  1315-->
         <v-row>
             <v-col
                 cols="12"
-                v-if="width >= 1315"
             >
                 <material-card
                     v-for="(item, index) in rounds"
@@ -100,7 +99,8 @@
                     :heading="item.heading"
                     color="accent"
                 >
-                    <v-card-text>
+                    <v-card-text
+                        v-if="width >= tmChangeSize">
                         <v-sheet
                             class="card-text-sheet"
                             color="dark">
@@ -111,20 +111,50 @@
                                     {{ player.name ? player.name : "미정" }}
                                 </template>
 
-                            <!-- <template #player-extension-bottom="{ match }">
-                                Extra info: {{ match.title }}
-                            </template> -->
+                            <!--
+                                <template #player-extension-bottom="{ match }">
+                                    Extra info: {{ match.title }}
+                                </template>
+                            -->
                             </bracket>
                         </v-sheet>
                     </v-card-text>
+                    <div class="card-text-sheet-items"
+                        v-else
+                        v-for="(roundItem, roundIndex) in item.round"
+                        :key="roundIndex"
+                        >
+                        <match-list-header
+                            :games="roundItem.games"
+                        >
+                        </match-list-header>
+
+                        <div
+                            v-for="(gamesItem, gamesIndex) in roundItem.games"
+                            :key="gamesIndex">
+
+                            <match-list-item
+                                :games="gamesItem"
+                                >
+                            </match-list-item>
+                            <v-divider class="match-list-divider" />
+                        </div>
+
+
+                    </div>
                 </material-card>
             </v-col>
 
-            <v-col
+            <!-- <v-col
                 cols="12"
-                v-else
             >
-            </v-col>
+                <material-card
+                    :heading="rounds[0].heading"
+                    color="accent"
+                >
+
+                </material-card>
+            </v-col> -->
         </v-row>
     </v-container>
 </template>
@@ -132,6 +162,11 @@
     .card-text-sheet {
         border-radius: 10px;
     }
+    .card-text-sheet-items{
+        padding: 10px;
+    }
+
+
     .league-match-select{
         width: 100%;
     }
@@ -147,12 +182,61 @@
 </style>
 <script>
     import Bracket from "./Bracket";
+    import MatchListItem from "./../components/MatchListItem"
+    import MatchListHeader from '../components/MatchListHeader';
     import axios from 'axios'
 
+    const defaultRounds = [
+        //Quarter
+        {
+            games: [
+                {
+                    player1: { id: "1", name: "Competitor 1", winner: true, score: 3 },
+                    player2: { id: "2", name: "Competitor 2", winner: false, score: 1 }
+                },
+                {
+                    player1: { id: "3", name: "Competitor 3", winner: false, score: 0 },
+                    player2: { id: "4", name: "Competitor 4", winner: true, score: 1 }
+                },
+                {
+                    player1: { id: "5", name: "Competitor 5", winner: true, score: 4 },
+                    player2: { id: "6", name: "Competitor 6", winner: false, score: 2 }
+                },
+                {
+                    player1: { id: "7", name: "Competitor 7", winner: false, score: 1 },
+                    player2: { id: "8", name: "Competitor 8", winner: true, score: 3 }
+                }
+            ]
+        },
+        //Semi
+        {
+            games: [
+                {
+                    player1: { id: "1", name: "Competitor 1", winner: false, score: 0 },
+                    player2: { id: "4", name: "Competitor 4", winner: true, score: 1 }
+                },
+                {
+                    player1: { id: "5", name: "Competitor 5", winner: null, score: 0 },
+                    player2: { id: "8", name: "Competitor 8", winner: null, score: 0 }
+                }
+            ]
+        },
+        //Final
+        {
+            games: [
+                {
+                    player1: { id: "4", name: "Competitor 4", winner: null, score: 0 },
+                    player2: { id: null, name: "미정", winner: null, score: 0 }
+                }
+            ]
+        }
+    ];
     export default {
         name: "matchViews",
         components: {
-            Bracket
+            Bracket,
+            MatchListItem,
+            MatchListHeader
         },
         data() {
             return {
@@ -178,7 +262,9 @@
 
                 ranking: [],
                 width: window.innerWidth,
-                height: window.innerHeight
+                height: window.innerHeight,
+                roundsList: null,
+                tmFristCount: 0
 
             };
         },
@@ -189,6 +275,27 @@
         },
         beforeDestory() {
             window.removeEventListener('resize', this.handleResize);
+        },
+        computed: {
+            tmChangeSize() {
+                let size;
+
+                switch (this.tmFristCount) {
+                    case 1:
+                    case 2: size = 550; break;
+                    case 3:
+                    case 4: size = 1060; break;
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8: size = 1310; break;
+                    default: size = 1;
+
+                }
+
+                return size;
+            }
+
         },
         watch: {
             leagueSelect: function(val) {
@@ -205,6 +312,12 @@
             handleResize(event) {
                 this.width = window.innerWidth;
                 this.height = window.innerHeight;
+            },
+            getRound(val) {
+                let round = val * 2;
+                console.log("[getRound] : " + val)
+
+                return round !== 2 ? round : "결승"
             },
             getChar(val) {
                 return String.fromCharCode(val + 65);
@@ -239,7 +352,8 @@
             async getGames(leag_no) {
                 this.isGameLoading = true;
                 this.leag_no = leag_no;
-
+                this.gameItems = null;
+                this.gameSelect = null;
                 await axios.get(`/api/leagues/${leag_no}/games`)
                     .then((result) => {
                         console.log("games: " + result);
@@ -267,11 +381,14 @@
                             this.rounds = [{
                                     heading: 'Tournament Match',
                                     round: result.data.data.tm
+                                    // round: defaultRounds
                                 }]
                         }
+                        this.roundsList = defaultRounds;
 
                         this.ranking = result.data.data.rankList;
-
+                        this.tmFristCount = this.rounds[0].round[0].games.length
+                        console.log('this.rounds[0].length: ' + JSON.stringify(this.rounds[0].round[0]));
 
                         this.isMatchesLoading = false;
                     })
