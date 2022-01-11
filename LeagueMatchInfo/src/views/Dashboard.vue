@@ -30,19 +30,21 @@
         lg="4"
       >
         <my-chart
+          v-if="arenaData !== null"
           title="경기장 사용 횟수"
           :loading="isStatisticsLoading"
           :chartData="arenaData">
         </my-chart>
+
       </v-col>
 
       <v-col
         cols="12"
         md="4"
         lg="4"
-
       >
         <my-chart
+          v-if="attendData !== null"
           title="출석율 (%)"
           :loading="isStatisticsLoading"
           :chartData="attendData">
@@ -53,9 +55,9 @@
         cols="12"
         md="4"
         lg="4"
-
       >
         <my-chart
+          v-if="gameAvgAttendData !== null"
           title="종목별 경기당 평균 출석 인원"
           :loading="isStatisticsLoading"
           :chartData="gameAvgAttendData">
@@ -71,6 +73,7 @@
         lg="12"
       >
         <my-chart
+          v-if="startTimeData !== null"
           title="경기 시작시간이 많은 시간대 (hour)"
           :loading="isStatisticsLoading"
           :chartData="startTimeData">
@@ -144,6 +147,11 @@
     watch: {
         leagueSelect: function(val) {
             // 통계 데이터 가져오기
+
+            this.arenaData = null;
+            this.attendData = null;
+            this.gameAvgAttendData = null;
+            this.startTimeData = null;
             this.getStatistics(val);
         }
     },
@@ -265,6 +273,10 @@
           this.isLeagueLoading = false;
       },
       async getStatistics(leag_no) {
+        this.arenaData = null;
+        this.attendData = null;
+        this.gameAvgAttendData = null;
+        this.startTimeData = null;
         this.isStatisticsLoading = true;
 
         await axios.get(`/api/leagues/${leag_no}/statistics`)
@@ -273,12 +285,22 @@
                 const arenaUseCount = result.data.data.arenaUseCount;
                 const attendanceRate = result.data.data.attendanceRate;
                 const gameAvgAttend = result.data.data.gameAvgAttend;
-
-                this.arenaData = this.getBarChartData(arenaUseCount.labels, arenaUseCount.data, false);
+                console.log('arenaUseCount !== null : ' + arenaUseCount !== null)
+                if (arenaUseCount !== null) {
+                  this.arenaData = this.getBarChartData(arenaUseCount.labels, arenaUseCount.data, false);
+                }
                 //'doughnut, pie'
-                this.attendData = this.getCicleChartData(attendanceRate.labels, attendanceRate.data, 'pie', false);
-                this.gameAvgAttendData = this.getBarChartData(gameAvgAttend.labels, gameAvgAttend.data, false);
-                this.startTimeData = this.getLineChartData(gameStartHour.labels, gameStartHour.data);
+                if (attendanceRate !== null) {
+                  this.attendData = this.getCicleChartData(attendanceRate.labels, attendanceRate.data, 'pie', false);
+                }
+                if (gameAvgAttend !== null) {
+                  this.gameAvgAttendData = this.getBarChartData(gameAvgAttend.labels, gameAvgAttend.data, false);
+
+                }
+                if (gameStartHour !== null) {
+                  this.startTimeData = this.getLineChartData(gameStartHour.labels, gameStartHour.data);
+
+                }
             })
             .catch((err) => {
                 console.log(err);

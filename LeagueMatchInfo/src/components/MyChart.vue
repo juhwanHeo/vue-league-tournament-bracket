@@ -48,14 +48,14 @@
     },
     watch: {
       chartData: function (val) {
-        console.log('watch: ' + val);
+        console.log('watch: ' + JSON.stringify(val));
         this.drawChart();
       }
     },
     methods: {
       async drawChart() {
         // context와 Chart.js객체, 데이터가 결정됐으니  그리기만 하면된다.
-        console.log('chartData: ' + this.chartData);
+        console.log('chartData: ' + JSON.stringify(this.chartData));
         if (this.chartData !== null) {
 
           const chartCtx = this.$refs.lineChart.getContext("2d");
