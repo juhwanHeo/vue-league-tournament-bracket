@@ -60,12 +60,54 @@
         text-align: center;
         background-color: #5b5c64;
     }
+
     .matches-list-card {
-        width: 70%;
         height: 30px;
-        /* position: absolute; */
         background-color: #5b5c64;
     }
+
+    @media screen and (max-width: 425px) {
+        .matches-list-card {
+            width: 100%;
+        }
+        .item-player1 {
+            min-width: 75px;
+            max-width: 75px;
+        }
+        .item-player2 {
+            min-width: 75px;
+            max-width: 75px;
+        }
+    }
+
+    @media screen and (min-width: 425px) and (max-width: 475px){
+        .matches-list-card {
+            width: 80%;
+        }
+        .item-player1 {
+            min-width: 75px;
+            max-width: 75px;
+        }
+        .item-player2 {
+            min-width: 75px;
+            max-width: 75px;
+        }
+    }
+
+    @media screen and (min-width: 475px) {
+        .matches-list-card {
+            width: 70%;
+        }
+        .item-player1 {
+            min-width: 100px;
+            max-width: 100px;
+        }
+        .item-player2 {
+            min-width: 100px;
+            max-width: 100px;
+        }
+    }
+
     .item-players {
         font-size: 16px;
         font-weight: 600;
@@ -74,9 +116,8 @@
         margin: 5px;
         display: inline-block;
     }
+
     .item-player1 {
-        min-width: 100px;
-        max-width: 100px;
         text-overflow: ellipsis;
         white-space:nowrap;
         overflow:hidden;
@@ -84,8 +125,6 @@
     }
 
     .item-player2 {
-        min-width: 100px;
-        max-width: 100px;
         text-overflow: ellipsis;
         white-space:nowrap;
         overflow:hidden;
@@ -95,6 +134,7 @@
     .item-player-win {
         color: #06d6a0;
     }
+
     .item-player-defeated {
         color: #a3a4a9;
     }

@@ -2,22 +2,52 @@
     <material-card
       class="my-chart-card"
       color="accent"
-      :loading="loading"
+      :loading="isLoading"
       :heading="title"
     >
+      <v-select
+        class="chart-type-select"
+        v-if="isSelect"
+        :loading="isLoading"
+        :items="selectItems"
+        v-model="selected"
+        item-text="type_name"
+        item-value="type"
+        label="Type"
+        outlined
+      />
+
       <div class="my-chart-view">
-        <canvas v-show="isLoading" id="myChart"  ref="lineChart"/>
+        <canvas id="myChart" ref="chartRef"/>
       </div>
     </material-card>
 </template>
 <style>
 .my-chart-view {
+  /* display: inline !important; */
   padding: 10px;
 }
+.chart-type-select {
+  padding: 10px !important;
+  width: 43%;
+}
+
 </style>
 <script>
-
   import Chart from 'chart.js'
+  import colorLib from '@kurkle/color';
+
+  // Chart.register(...registerables);
+  const CHART_COLORS = {
+    red: 'rgb(255, 99, 132)',
+    green: 'rgb(75, 192, 192)',
+    blue: 'rgb(54, 162, 235)',
+    purple: 'rgb(153, 102, 255)',
+    orange: 'rgb(255, 159, 64)',
+    yellow: 'rgb(255, 205, 86)',
+    grey: 'rgb(201, 203, 207)'
+  };
+
   export default {
     name: 'MyChart',
     props:{
@@ -26,48 +56,199 @@
         default: null
       },
       title: String,
-      loading: Boolean
+      type: String,
+      // loading: {
+      //   type: Boolean,
+      //   default: true
+      // },
+      isSelect: {
+        type: Boolean,
+        default: false
+      },
     },
     data() {
       return {
-        Chart
+        Chart,
+        selected: this.type,
+        selectItems: [
+          {type: 'bar', type_name: 'Bar'},
+          {type: 'doughnut', type_name: 'Doughnut'},
+          {type: 'line', type_name: 'Line'},
+          {type: 'pie', type_name: 'Pie'},
+        ],
+        isLoading: true,
+        myChart: null
       }
-    },
-    async created() {
-      // 필요 시 데이터 가져오는 로직
-      // 차트생성에 사용할 옵션과 데이터가 결정될 것이다.
     },
     async mounted() {
       // 마운트 된 두 ref에 접근할 수 있으므로 마운트 뒤 차트를 그린다.
-      await this.drawChart();
-    },
-    computed: {
-      isLoading: function () {
-        return !this.loading;
-      }
+      this.drawChart(this.type);
     },
     watch: {
-      chartData: function (val) {
-        console.log('watch: ' + JSON.stringify(val));
-        this.drawChart();
+      selected: function (val) {
+        if(val) {
+          if (typeof val === 'object')
+            this.drawChart(val.type);
+
+          else this.drawChart(val);
+
+        }
       }
     },
     methods: {
-      async drawChart() {
-        // context와 Chart.js객체, 데이터가 결정됐으니  그리기만 하면된다.
-        console.log('chartData: ' + JSON.stringify(this.chartData));
-        if (this.chartData !== null) {
+      async drawChart(type) {
+        this.isLoading = true;
 
-          const chartCtx = this.$refs.lineChart.getContext("2d");
-          const myChart = new Chart(chartCtx, {
-            type: this.chartData.type,
-            data: this.chartData.data,
-            options: this.chartData.options
-          })
+        let chartData;
+        switch (type) {
+          case 'bar':
+            chartData = this.getBarChartData(this.chartData.labels, this.chartData.data, false);
+            break;
+          case 'line':
+            chartData = this.getLineChartData(this.chartData.labels, this.chartData.data, false);
+            break;
+          case 'doughnut':
+          case 'pie':
+            chartData = this.getCicleChartData(this.chartData.labels, this.chartData.data, type, true);
+            break;
         }
-        // console.log(chartCtx, "chartCtx?");
 
+        if(this.myChart !== null) {
+          this.myChart.destroy();
+        }
+
+        if (chartData !== null) {
+            this.myChart = new Chart(this.$refs.chartRef, {
+              type: type ? type : chartData.type,
+              data: chartData.data,
+              options: chartData.options
+            })
+        }
+        this.myChart.update();
+
+        this.isLoading = false;
+
+        console.log("loding: " + this.isLoading);
+      },
+      transparentize(value, opacity) {
+        var alpha = opacity === undefined ? 0.5 : 1 - opacity;
+        return colorLib(value).alpha(alpha).rgbString();
+      },
+      getLineChartData(labels, data) {
+        let chartData = {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              backgroundColor: this.transparentize(CHART_COLORS.red, 0.5),
+              borderColor: CHART_COLORS.red,
+              data: data,
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: false,
+            },
+            scales: {
+              yAxes: [{
+                display: true,
+                ticks: {
+                  beginAtZero: true
+                }
+              }]
+            },
+            elements: {
+              bar: {
+                borderWidth: 2
+              }
+            }
+          }
+        };
+
+        return chartData;
+      },
+      getBarChartData(labels, data, opacity) {
+        let barChartData = {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              backgroundColor: opacity ? Object.values(CHART_COLORS).map(color => this.transparentize(color)) : Object.values(CHART_COLORS),
+              borderColor: 'white',
+              data: data,
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: false,
+            },
+            scales: {
+              yAxes: [{
+                display: true,
+                ticks: {
+                  beginAtZero: true
+                }
+              }]
+            },
+            elements: {
+              bar: {
+                borderWidth: 2
+              }
+            }
+          }
+        };
+
+        return barChartData;
+      },
+      getCicleChartData(labels, data, type, opacity) {
+        let ciclehartData = {
+          type: type,
+          data: {
+            labels: labels,
+            datasets: [{
+              backgroundColor: opacity ? Object.values(CHART_COLORS).map(color => this.transparentize(color)) : Object.values(CHART_COLORS),
+              borderColor: this.transparentize('white', 0),
+              data: data,
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              }
+            }
+          }
+        };
+
+        return ciclehartData;
+      },
+      getBubleChartData(labels, data, type, opacity) {
+        let ciclehartData = {
+          type: type,
+          data: {
+            labels: labels,
+            datasets: [{
+              backgroundColor: opacity ? Object.values(CHART_COLORS).map(color => this.transparentize(color)) : Object.values(CHART_COLORS),
+              borderColor: this.transparentize('white', 0),
+              data: data,
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              }
+            }
+          }
+        };
+
+        return ciclehartData;
       },
     }
+
   }
 </script>

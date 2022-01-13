@@ -14,11 +14,13 @@
                 <v-select
                     class="league-match-select"
                     v-model="leagueSelect"
-                    :loading="isLeagueLoading"
                     :items="leagueItems"
+                    :loading="isLeagueLoading"
                     item-text="leag_nm"
                     item-value="leag_no"
                     label="League"
+                    persistent-hint
+                    return-object
                     outlined
                 />
             </v-col>
@@ -29,8 +31,8 @@
                 <v-select
                     class="league-match-select"
                     v-model="gameSelect"
-                    :loading="isGameLoading"
                     :items="gameItems"
+                    :loading="isGameLoading"
                     item-text="game_nm"
                     item-value="game_no"
                     label="Game"
@@ -144,20 +146,10 @@
                     </div>
                 </material-card>
             </v-col>
-
-            <!-- <v-col
-                cols="12"
-            >
-                <material-card
-                    :heading="rounds[0].heading"
-                    color="accent"
-                >
-
-                </material-card>
-            </v-col> -->
         </v-row>
     </v-container>
 </template>
+
 <style>
     .card-text-sheet {
         border-radius: 10px;
@@ -180,6 +172,7 @@
 
     }
 </style>
+
 <script>
     import Bracket from "./Bracket";
     import MatchListItem from "./../components/MatchListItem"
@@ -240,13 +233,13 @@
         },
         data() {
             return {
-                leagueSelect: null,
-                gameSelect: null,
-                leagueItems: [],
-                gameItems: [],
+                leagueSelect: {leag_no : 0, leag_nm: '로딩 중'},
+                gameSelect: {game_no : 0, game_nm: '로딩 중'},
+                leagueItems: [{leag_no : 0, leag_nm: '로딩 중'}],
+                gameItems: [{game_no : 0, game_nm: '로딩 중'}],
                 rounds: null,
-                leag_no: null,
-                game_no: null,
+                leag_no: [],
+                game_no: [],
                 isLeagueLoading: true,
                 isGameLoading: false,
                 isMatchesLoading: true,
@@ -299,10 +292,22 @@
         },
         watch: {
             leagueSelect: function(val) {
-                this.getGames(val);
+                // console.log('watch leagueSelect val: ' + JSON.stringify(val));
+                if (val) {
+                    if (typeof val === 'object')
+                        this.getGames(val.leag_no);
+                    else
+                        this.getGames(val);
+                }
             },
             gameSelect: function(val) {
-                this.getGameInfo(val);
+                // console.log('watch gameSelect val: ' + JSON.stringify(val));
+                if (val) {
+                    if (typeof val === 'object')
+                        this.getGameInfo(val.game_no);
+                    else
+                        this.getGameInfo(val);
+                }
             }
         },
         methods: {
@@ -314,9 +319,9 @@
                 this.height = window.innerHeight;
             },
             getRound(val) {
-                let round = val * 2;
                 console.log("[getRound] : " + val)
 
+                let round = val * 2;
                 return round !== 2 ? round : "결승"
             },
             getChar(val) {
@@ -338,10 +343,9 @@
                 this.isLeagueLoading = true;
                 await axios.get(`/api/leagues`)
                     .then((result) => {
-                        console.log("leages: " + result);
                         this.leagueItems = result.data.data;
                         this.leagueSelect = this.leagueItems[0].leag_no;
-                        console.log("leagueSelect : " + this.leagueSelect);
+                        console.log('[getLeages] select: ' + this.leagueItems[0].leag_no);
                     })
                     .catch((err) => {
                         console.log(err);
@@ -350,23 +354,22 @@
                 this.isLeagueLoading = false;
             },
             async getGames(leag_no) {
+                console.log('getGames: ' + leag_no);
                 this.isGameLoading = true;
                 this.leag_no = leag_no;
-                this.gameItems = null;
-                this.gameSelect = null;
                 await axios.get(`/api/leagues/${leag_no}/games`)
                     .then((result) => {
-                        console.log("games: " + result);
                         this.gameItems = result.data.data;
                         this.gameSelect = this.gameItems[0].game_no;
-                        console.log("gameSelect : " + this.gameSelect);
                     })
                     .catch((err) => {
                         console.log(err);
+                        this.isGameLoading = false;
+                        this.gameSelect = {game_no : 0, game_nm: '로딩 중'};
+                        this.gameItems = [{game_no : 0, game_nm: '로딩 중'}];
                     })
 
                 this.isGameLoading = false;
-
             },
             async getGameInfo(game_no) {
                 this.game_no = game_no;
@@ -376,25 +379,26 @@
 
                 await axios.get(`/api/leagues/${this.leag_no}/games/${this.game_no}/matches`)
                     .then((result) => {
-                        console.log(JSON.stringify(result.data.data));
                         if (result.data.data.tm) {
                             this.rounds = [{
                                     heading: 'Tournament Match',
                                     round: result.data.data.tm
                                     // round: defaultRounds
                                 }]
+
+                            this.tmFristCount = this.rounds[0].round[0].games.length
                         }
+
                         this.roundsList = defaultRounds;
-
                         this.ranking = result.data.data.rankList;
-                        this.tmFristCount = this.rounds[0].round[0].games.length
-                        console.log('this.rounds[0].length: ' + JSON.stringify(this.rounds[0].round[0]));
-
-                        this.isMatchesLoading = false;
                     })
                     .catch((err) => {
                         console.log(err);
+                        this.rounds = null;
+                        this.ranking = null;
                     })
+
+                this.isMatchesLoading = false;
             },
         }
     };

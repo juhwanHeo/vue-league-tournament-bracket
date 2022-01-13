@@ -22,71 +22,100 @@
       </v-col>
     </v-row>
 
-    <!-- line 1 -->
-    <v-row>
-      <v-col
-        cols="12"
-        md="4"
-        lg="4"
-      >
-        <my-chart
-          v-if="arenaData !== null"
-          title="경기장 사용 횟수"
-          :loading="isStatisticsLoading"
-          :chartData="arenaData">
-        </my-chart>
+    <div
+      class="progress-circular"
+      v-if="isStatisticsLoading">
+      <v-progress-circular
 
-      </v-col>
+        :size="70"
+        :width="7"
+        color="purple"
+        indeterminate
+      />
+    </div>
 
-      <v-col
-        cols="12"
-        md="4"
-        lg="4"
-      >
-        <my-chart
-          v-if="attendData !== null"
-          title="출석율 (%)"
-          :loading="isStatisticsLoading"
-          :chartData="attendData">
-        </my-chart>
-      </v-col>
+    <div v-else>
 
-      <v-col
-        cols="12"
-        md="4"
-        lg="4"
-      >
-        <my-chart
-          v-if="gameAvgAttendData !== null"
-          title="종목별 경기당 평균 출석 인원"
-          :loading="isStatisticsLoading"
-          :chartData="gameAvgAttendData">
-        </my-chart>
-      </v-col>
-    </v-row>
 
-    <!-- line 2 -->
-    <v-row>
-      <v-col
-        cols="12"
-        md="12"
-        lg="12"
-      >
-        <my-chart
-          v-if="startTimeData !== null"
-          title="경기 시작시간이 많은 시간대 (hour)"
-          :loading="isStatisticsLoading"
-          :chartData="startTimeData">
-        </my-chart>
-      </v-col>
-    </v-row>
+      <!-- line 1 -->
+      <v-row>
+        <v-col
+          cols="12"
+          md="4"
+          lg="4"
+        >
+          <my-chart
+            v-if="arenaData !== null"
+            title="경기장 사용 횟수"
+            :chartData="arenaData"
+            :isSelect="true"
+            :type="'bar'">
+          </my-chart>
+
+        </v-col>
+
+        <v-col
+          cols="12"
+          md="4"
+          lg="4"
+        >
+          <my-chart
+            v-if="attendData !== null"
+            title="출석율 (%)"
+            :chartData="attendData"
+            :isSelect="true"
+            :type="'doughnut'">
+          </my-chart>
+        </v-col>
+
+        <v-col
+          cols="12"
+          md="4"
+          lg="4"
+        >
+          <my-chart
+            v-if="gameAvgAttendData !== null"
+            title="종목별 경기당 평균 출석 인원"
+            :chartData="gameAvgAttendData"
+            :isSelect="true"
+            :type="'bar'">
+          </my-chart>
+        </v-col>
+      </v-row>
+
+      <!-- line 2 -->
+      <v-row>
+        <v-col
+          cols="12"
+          md="12"
+          lg="12"
+        >
+          <my-chart
+            v-if="startTimeData !== null"
+            title="경기 시작시간이 많은 시간대 (hour)"
+            :chartData="startTimeData"
+            :isSelect="true"
+            :type="'line'">
+          </my-chart>
+        </v-col>
+      </v-row>
+    </div>
   </v-container>
 </template>
 
+<style>
+.progress-circular {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+</style>
 <script>
   // Utilities
   import MyChart from '../components/MyChart.vue'
-  import colorLib from '@kurkle/color';
   import axios from 'axios'
 
   const CHART_COLORS = {
@@ -160,103 +189,6 @@
           // alert('리그 통계 준비중 입니다. \nPreparing to open the League Statistics. ')
           this.getLeagues();
       },
-      transparentize(value, opacity) {
-        var alpha = opacity === undefined ? 0.5 : 1 - opacity;
-        return colorLib(value).alpha(alpha).rgbString();
-      },
-      getLineChartData(labels, data) {
-        let chartData = {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [{
-              backgroundColor: this.transparentize(CHART_COLORS.red, 0.5),
-              borderColor: CHART_COLORS.red,
-              data: data,
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: false,
-            },
-            scales: {
-              yAxes: [{
-                display: true,
-                ticks: {
-                  beginAtZero: true
-                }
-              }]
-            },
-            elements: {
-              bar: {
-                borderWidth: 2
-              }
-            }
-          }
-        };
-
-        return chartData;
-      },
-
-      getBarChartData(labels, data, opacity) {
-        let barChartData = {
-          type: 'bar',
-          data: {
-            labels: labels,
-            datasets: [{
-              backgroundColor: opacity ? Object.values(CHART_COLORS).map(color => this.transparentize(color)) : Object.values(CHART_COLORS),
-              borderColor: 'white',
-              data: data,
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: false,
-            },
-            scales: {
-              yAxes: [{
-                display: true,
-                ticks: {
-                  beginAtZero: true
-                }
-              }]
-            },
-            elements: {
-              bar: {
-                borderWidth: 2
-              }
-            }
-          }
-        };
-
-        return barChartData;
-      },
-
-      getCicleChartData(labels, data, type, opacity) {
-        let barChartData = {
-          type: type,
-          data: {
-            labels: labels,
-            datasets: [{
-              backgroundColor: opacity ? Object.values(CHART_COLORS).map(color => this.transparentize(color)) : Object.values(CHART_COLORS),
-              borderColor: this.transparentize('white', 0),
-              data: data,
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'top',
-              }
-            }
-          }
-        };
-
-        return barChartData;
-      },
       async getLeagues() {
           this.isLeagueLoading = true;
           await axios.get(`/api/leagues`)
@@ -285,20 +217,23 @@
                 const arenaUseCount = result.data.data.arenaUseCount;
                 const attendanceRate = result.data.data.attendanceRate;
                 const gameAvgAttend = result.data.data.gameAvgAttend;
-                console.log('arenaUseCount !== null : ' + arenaUseCount !== null)
                 if (arenaUseCount !== null) {
-                  this.arenaData = this.getBarChartData(arenaUseCount.labels, arenaUseCount.data, false);
+                  // this.arenaData = this.getBarChartData(arenaUseCount.labels, arenaUseCount.data, false);
+                  this.arenaData = arenaUseCount;
                 }
                 //'doughnut, pie'
                 if (attendanceRate !== null) {
-                  this.attendData = this.getCicleChartData(attendanceRate.labels, attendanceRate.data, 'pie', false);
+                  // this.attendData = this.getCicleChartData(attendanceRate.labels, attendanceRate.data, 'doughnut', false);
+                  this.attendData = attendanceRate;
                 }
                 if (gameAvgAttend !== null) {
-                  this.gameAvgAttendData = this.getBarChartData(gameAvgAttend.labels, gameAvgAttend.data, false);
+                  // this.gameAvgAttendData = this.getBarChartData(gameAvgAttend.labels, gameAvgAttend.data, false);
+                  this.gameAvgAttendData = gameAvgAttend;
 
                 }
                 if (gameStartHour !== null) {
-                  this.startTimeData = this.getLineChartData(gameStartHour.labels, gameStartHour.data);
+                  // this.startTimeData = this.getLineChartData(gameStartHour.labels, gameStartHour.data);
+                  this.startTimeData = gameStartHour;
 
                 }
             })
