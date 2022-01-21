@@ -81,4 +81,5 @@ yarn serve
 ```
 
 # LICENSE
-`MIT License`
+ChangeOriginalBraket - `MIT License`  
+LeagueMatchInfo - `Vuetify License`
