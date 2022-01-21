@@ -54,5 +54,10 @@
 <style>
     .vtb-wrapper {
         display: flex;
+
+        /* background-image: url('~@/assets/hallym-symbol-ui-mark.png'); */
+        background-position: center;
+        background-position-x: 30%;
+        background-size: 30%;
     }
 </style>

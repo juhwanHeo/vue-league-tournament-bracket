@@ -41,8 +41,6 @@
     .vtb-player2 {
         border-radius: 0 0 10px 10px ;
     }
-    
-
 
     .vtb-item-players {
         background-color: #3b3c40;
@@ -56,7 +54,7 @@
         text-align: center;
 
         width: 10%;
-        height: 100%; 
+        height: 100%;
         /* background-color: #1e2025; */
     }
 </style>

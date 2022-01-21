@@ -30,18 +30,32 @@
 </template>
 <style>
     .vtb-player {
-        width: 100%;
-        height: 100%;
+        width: calc(100% - 80px);
+        height: calc(100% - 80px);
     }
+
+    .vtb-player1 {
+        border-radius: 10px 10px 0 0;
+    }
+
+    .vtb-player2 {
+        border-radius: 0 0 10px 10px ;
+    }
+
+    .vtb-item-players {
+        background-color: #3b3c40;
+    }
+
     .vtb-player .vtb-player-score {
         margin-left: auto;
         margin-right: auto;
-        line-height: 50px;
+        line-height: 25px;
         float: right;
         text-align: center;
+
         width: 10%;
         height: 100%;
-        background-color: #1e2025;
+        /* background-color: #1e2025; */
     }
 </style>
 <script>
