@@ -2,8 +2,8 @@
 
   * [original]( https://github.com/kamilwylegala/vue-tournament-bracket ) Github
   * [그래프 오픈소스]( https://www.chartjs.org/ ) Chart.js (ver 2.9.x)
-  * [league]( https://hleague.hallym.ac.kr:2443/ ) 에 바로가기 링크 추가
-  * [테스트 사이트](http://hleague.hallym.ac.kr:23003/components/matchViews/) `22.01.04 ~ 22.01.31` (테스트 기간)
+  * [league]( https://league.hallym.ac.kr:2443/ ) 에 바로가기 링크 추가
+  * [리그 통계 및 대진표 서비스]( http://league.hallym.ac.kr:23003/ )
 
 ## File
 
@@ -28,7 +28,7 @@ yarn serve
 ### IMG
 ![LeagueInfo1](https://user-images.githubusercontent.com/47820142/145952772-5abe67d9-cd17-4041-ab02-8cf3edc79c8f.PNG)
 
-(Mouse Hover)
+(Mouse Hover)  
 ![LeagueInfo2](https://user-images.githubusercontent.com/47820142/145952810-37313667-caa5-47a6-bb57-1eb4db789323.PNG)
 
 ### DATA
