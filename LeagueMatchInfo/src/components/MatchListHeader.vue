@@ -8,9 +8,11 @@
 
     export default {
         name: "match-list-header",
-        props: ["games"],
+        props: ["games", "isBracket"],
         computed: {
             getGang() {
+                console.log("header: " + JSON.stringify(this.games));
+                if(!this.isBracket && this.games[0].player1.lvl === "99") return "3, 4위전";
                 let round = 2 * this.games.length;
                 return round !== 2 ? round + "강" : "결승";
             }

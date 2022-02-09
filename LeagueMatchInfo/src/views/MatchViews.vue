@@ -5,7 +5,9 @@
         fluid
         tag="section"
     >
-        <div> width: {{width}}, height: {{height}}</div>
+        <!-- <div> width: {{width}}, height: {{height}}</div>
+        <div> bbbb: {{thirdRound != null}}</div>
+        <div> cccc: {{thirdRound }}</div> -->
         <v-row
             align="center">
             <v-col
@@ -120,14 +122,40 @@
                             -->
                             </bracket>
                         </v-sheet>
-                    </v-card-text>
-                    <div class="card-text-sheet-items"
-                        v-else
-                        v-for="(roundItem, roundIndex) in item.round"
-                        :key="roundIndex"
+
+                        <div class="card-text-sheet-items"
+                            v-if="third != null"
                         >
                         <match-list-header
+                            :games="third[0].games"
+                            :isBracket="true"
+                        >
+                        </match-list-header>
+
+                        <div
+                            v-for="(gamesItem, gamesIndex) in third[0].games"
+                            :key="gamesIndex">
+
+                            <match-list-item
+                                :games="gamesItem"
+                                >
+                            </match-list-item>
+                            <v-divider class="match-list-divider" />
+                        </div>
+                    </div>
+                    </v-card-text>
+
+                    <div class="card-text-sheet-items"
+                        v-else-if="thirdRound != null"
+                        v-for="(roundItem, roundIndex) in thirdRound[0].round"
+                        :key="roundIndex"
+                        >
+                        <!-- <div>
+                            else-if: {{roundItem}}
+                        </div> -->
+                        <match-list-header
                             :games="roundItem.games"
+                            :isBracket="false"
                         >
                         </match-list-header>
 
@@ -141,8 +169,32 @@
                             </match-list-item>
                             <v-divider class="match-list-divider" />
                         </div>
+                    </div>
 
+                    <div class="card-text-sheet-items"
+                        v-else
+                        v-for="(roundItem, roundIndex) in item.round"
+                        :key="roundIndex"
+                        >
+                        <!-- <div>
+                            else: {{roundItem}}
+                        </div> -->
+                        <match-list-header
+                            :games="roundItem.games"
+                            :isBracket="false"
+                        >
+                        </match-list-header>
 
+                        <div
+                            v-for="(gamesItem, gamesIndex) in roundItem.games"
+                            :key="gamesIndex">
+
+                            <match-list-item
+                                :games="gamesItem"
+                                >
+                            </match-list-item>
+                            <v-divider class="match-list-divider" />
+                        </div>
                     </div>
                 </material-card>
             </v-col>
@@ -238,6 +290,8 @@
                 leagueItems: [{leag_no : 0, leag_nm: '로딩 중'}],
                 gameItems: [{game_no : 0, game_nm: '로딩 중'}],
                 rounds: null,
+                thirdRound: null,
+                third: null,
                 leag_no: [],
                 game_no: [],
                 isLeagueLoading: true,
@@ -375,6 +429,8 @@
                 this.game_no = game_no;
                 this.isMatchesLoading = true;
                 this.rounds = null;
+                this.thirdRound = null;
+                this.third = null;
                 this.rank = null;
 
                 await axios.get(`/api/leagues/${this.leag_no}/games/${this.game_no}/matches`)
@@ -387,8 +443,20 @@
                                 }]
 
                             this.tmFristCount = this.rounds[0].round[0].games.length
+                            // console.log("this.rounds: " + JSON.stringify(this.rounds));
                         }
+                        if (result.data.data.third) {
+                            this.third = result.data.data.third;
 
+                            let tm = _.clone(result.data.data.tm);
+                            tm.splice(result.data.data.tm.length - 1, 0, this.third[0]);
+                            this.thirdRound = [{
+                                heading: 'Tournament Match',
+                                round: tm
+                            }]
+                            // console.log("abcd: " + (result.data.data.tm.length - 1));
+                            // console.log("thirdRound: " + JSON.stringify(this.thirdRound));
+                        }
                         this.roundsList = defaultRounds;
                         this.ranking = result.data.data.rankList;
                     })

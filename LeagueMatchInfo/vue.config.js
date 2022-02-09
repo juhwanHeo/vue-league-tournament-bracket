@@ -7,7 +7,7 @@ module.exports = {
 
           // 운영 서버
           target: 'http://localhost:23003'
-          // target: 'http://hleague.hallym.ac.kr:23003'
+          // target: 'http://league.hallym.ac.kr:23003'
       }
     }
   },

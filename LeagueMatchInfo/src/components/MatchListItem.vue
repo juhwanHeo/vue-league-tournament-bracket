@@ -34,7 +34,6 @@
 </template>
 
 <script>
-// this.games.winner
     export default {
         name: "match-list-item",
         props: ["games"],
@@ -42,6 +41,9 @@
             isAfterPlay() {
                 return this.games.player1.winner !== null;
             }
+        },
+        mounted() {
+            // console.log("list-item: " + JSON.stringify(this.games));
         },
 
         methods: {
