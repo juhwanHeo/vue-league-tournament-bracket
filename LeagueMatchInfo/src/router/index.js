@@ -31,7 +31,7 @@ const router = new Router({
       route('Typography', null, 'components/typography'),
       route('Maps', null, 'components/maps/'),
       route('MatchViews', null, 'components/matchViews/'),
-
+      route('CalendarViews', null, 'components/calendarViews/'),
       // Tables
       route('Regular Tables', null, 'tables/regular'),
 

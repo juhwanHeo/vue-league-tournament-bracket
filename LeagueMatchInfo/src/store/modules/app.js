@@ -17,6 +17,11 @@ const state = {
       icon: 'mdi-tournament',
       to: '/components/matchViews/',
     },
+    {
+      title: 'Calendars',
+      icon: 'mdi-calendar',
+      to: '/components/calendarViews/',
+    },
     // {
     //   title: 'User Profile',
     //   icon: 'mdi-account',
