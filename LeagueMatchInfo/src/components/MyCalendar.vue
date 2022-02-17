@@ -74,11 +74,10 @@
         :event-overlap-threshold="30"
         :events="events"
         :type="type"
+        :start="getStart"
         @click:event="showEvent"
         @click:more="viewDay"
         @click:date="viewDay"
-        :loading="true"
-
       ></v-calendar>
 
       <v-menu
@@ -179,19 +178,25 @@
       }
     },
     async mounted() {
-      // 마운트 된 두 ref에 접근할 수 있으므로 마운트 뒤 차트를 그린다.
-      // this.drawChart(this.type);
       this.$refs.calendar.checkChange()
-
 
     },
     watch: {
+      events(val) {
+        this.$refs.calendar.checkChange()
 
+        let result = val[0]
+        this.focus = (result === undefined) ? new Date() : result.start;
+      }
     },
     computed: {
       getTitle() {
         let titleSplit = this.$refs.calendar.title.split('월')
         return titleSplit[1].trim() + '년 ' + titleSplit[0] + '월'
+      },
+      getStart() {
+        let result = this.events[0]
+        return result === undefined ? new Date() : result.start;
       }
     },
     methods: {

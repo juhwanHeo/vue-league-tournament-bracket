@@ -212,34 +212,39 @@
         this.isStatisticsLoading = true;
 
         await axios.get(`/api/leagues/${leag_no}/statistics`)
-            .then((result) => {
-                const gameStartHour = result.data.data.gameStartHour;
-                const arenaUseCount = result.data.data.arenaUseCount;
-                const attendanceRate = result.data.data.attendanceRate;
-                const gameAvgAttend = result.data.data.gameAvgAttend;
-                if (arenaUseCount !== null) {
-                  // this.arenaData = this.getBarChartData(arenaUseCount.labels, arenaUseCount.data, false);
-                  this.arenaData = arenaUseCount;
-                }
-                //'doughnut, pie'
-                if (attendanceRate !== null) {
-                  // this.attendData = this.getCicleChartData(attendanceRate.labels, attendanceRate.data, 'doughnut', false);
-                  this.attendData = attendanceRate;
-                }
-                if (gameAvgAttend !== null) {
-                  // this.gameAvgAttendData = this.getBarChartData(gameAvgAttend.labels, gameAvgAttend.data, false);
-                  this.gameAvgAttendData = gameAvgAttend;
+          .then((result) => {
+            let nullCnt = 4;
+            const gameStartHour = result.data.data.gameStartHour;
+            const arenaUseCount = result.data.data.arenaUseCount;
+            const attendanceRate = result.data.data.attendanceRate;
+            const gameAvgAttend = result.data.data.gameAvgAttend;
+            if (arenaUseCount !== null) {
+              // this.arenaData = this.getBarChartData(arenaUseCount.labels, arenaUseCount.data, false);
+              this.arenaData = arenaUseCount;
+              nullCnt--
+            }
+            //'doughnut, pie'
+            if (attendanceRate !== null) {
+              // this.attendData = this.getCicleChartData(attendanceRate.labels, attendanceRate.data, 'doughnut', false);
+              this.attendData = attendanceRate;
+              nullCnt--
+            }
+            if (gameAvgAttend !== null) {
+              // this.gameAvgAttendData = this.getBarChartData(gameAvgAttend.labels, gameAvgAttend.data, false);
+              this.gameAvgAttendData = gameAvgAttend;
+              nullCnt--
+            }
+            if (gameStartHour !== null) {
+              // this.startTimeData = this.getLineChartData(gameStartHour.labels, gameStartHour.data);
+              this.startTimeData = gameStartHour;
+              nullCnt--
+            }
 
-                }
-                if (gameStartHour !== null) {
-                  // this.startTimeData = this.getLineChartData(gameStartHour.labels, gameStartHour.data);
-                  this.startTimeData = gameStartHour;
-
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            })
+            if (nullCnt === 4) alert("데이터가 없습니다.")
+          })
+          .catch((err) => {
+            console.log(err);
+          })
         setTimeout(() => {
           this.isStatisticsLoading = false;
         }, 1000)
