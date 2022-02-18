@@ -85,11 +85,10 @@
     name: 'calendarViews',
     data() {
       return {
-
-        leagueSelect: {leag_no : 0, leag_nm: '로딩 중'},
-        gameSelect: {game_no : 0, game_nm: '로딩 중'},
-        leagueItems: [{leag_no : 0, leag_nm: '로딩 중'}],
-        gameItems: [{game_no : 0, game_nm: '로딩 중'}],
+        leagueSelect: {leag_no : '-1', leag_nm: '로딩 중'},
+        gameSelect: {game_no : '-1', game_nm: '로딩 중'},
+        leagueItems: [{leag_no : '-1', leag_nm: '로딩 중'}],
+        gameItems: [{game_no : '-1', game_nm: '로딩 중'}],
 
         isLeagueLoading: true,
         isGameLoading: false,
@@ -103,11 +102,23 @@
     watch: {
       leagueSelect: function(val) {
         // console.log('watch leagueSelect val: ' + JSON.stringify(val));
+        this.events = []
         if (val) {
-          if (typeof val === 'object')
-            this.getGames(val.leag_no);
-          else
-            this.getGames(val);
+          // console.log('watch leagueSelect val: if');
+          if (typeof val === 'object'){
+            if(val.leag_no === '-1') {
+              this.gameSelect = {game_no : '-1', game_nm: '전체'}
+              this.gameItems = [{game_no : '-1', game_nm: '전체'}]
+            }
+            this.getGames(val.leag_no)
+          }
+          else {
+            if (val === '-1') {
+              this.gameSelect = {game_no : '-1', game_nm: '전체'}
+              this.gameItems = [{game_no : '-1', game_nm: '전체'}]
+            }
+            this.getGames(val)
+          }
         }
       },
       gameSelect: function(val) {
@@ -184,7 +195,7 @@
               })
             }
             this.leagueSelect = this.leagueItems[0].leag_no;
-            console.log('[getLeages] select: ' + this.leagueItems[0].leag_no);
+            // console.log('[getLeages] select: ' + this.leagueItems[0].leag_no);
           })
           .catch((err) => {
             console.log(err);
@@ -193,14 +204,14 @@
         this.isLeagueLoading = false;
       },
       async getGames(leag_no) {
-        console.log('getGames: ' + leag_no);
+        // console.log('getGames leag_no: ' + leag_no);
         this.isGameLoading = true;
         this.leag_no = leag_no;
         await axios.get(`/api/leagues/${leag_no}/games`)
           .then((result) => {
             this.gameItems = []
             this.gameItems.push({
-              game_no: '-1',
+              game_no: '-' + result.data.data[0].game_no,
               game_nm: "전체"
             })
 
@@ -215,13 +226,16 @@
           .catch((err) => {
             console.log(err);
             this.isGameLoading = false;
-            this.gameSelect = {game_no : 0, game_nm: '로딩 중'};
-            this.gameItems = [{game_no : 0, game_nm: '로딩 중'}];
+            if (this.gameSelect.game_no !== '-1') {
+              this.gameSelect = {game_no : '-1', game_nm: '전체'};
+              this.gameItems = [{game_no : '-1', game_nm: '전체'}];
+            }
           })
 
         this.isGameLoading = false;
       },
       async getGameSchedule(game_no) {
+        // console.log('getGameSchedule game_no: ' + game_no);
         this.events = [];
         this.isCalendarLoading = true;
 
@@ -257,6 +271,7 @@
               console.log(err.response);
               if (err.response.status === 404) {
                 alert('일정이 없습니다.')
+                this.gameItems = [{game_no : '-1', game_nm: 'No Data'}]
               }
 
             })
