@@ -271,7 +271,9 @@
               console.log(err.response);
               if (err.response.status === 404) {
                 alert('일정이 없습니다.')
-                this.gameItems = [{game_no : '-1', game_nm: 'No Data'}]
+                if (this.gameItems.length === 1){
+                    this.gameItems = [{game_no : '-1', game_nm: 'No Data'}]
+                  }
               }
 
             })

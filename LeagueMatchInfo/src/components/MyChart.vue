@@ -57,10 +57,6 @@
       },
       title: String,
       type: String,
-      // loading: {
-      //   type: Boolean,
-      //   default: true
-      // },
       isSelect: {
         type: Boolean,
         default: false

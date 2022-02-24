@@ -1,8 +1,8 @@
 <template>
   <v-container
     id="dashboard-view"
-    fluid
     tag="section"
+    fluid
   >
     <v-row
       align="center">
@@ -87,8 +87,8 @@
       <v-row>
         <v-col
           cols="12"
-          md="12"
-          lg="12"
+          md="6"
+          lg="6"
         >
           <my-chart
             v-if="startTimeData !== null"
@@ -96,6 +96,19 @@
             :chartData="startTimeData"
             :isSelect="true"
             :type="'line'">
+          </my-chart>
+        </v-col>
+        <v-col
+          cols="12"
+          md="6"
+          lg="6"
+        >
+          <my-chart
+            v-if="genderData !== null"
+            title="리그 경기(성별) 비율(%)"
+            :chartData="genderData"
+            :isSelect="true"
+            :type="'pie'">
           </my-chart>
         </v-col>
       </v-row>
@@ -139,6 +152,7 @@
         isLeagueLoading: true,
         isStatisticsLoading: true,
         attendData: null,
+        genderData: null,
         startTimeData: null,
         arenaData: null,
         gameAvgAttendData: null ,
@@ -208,25 +222,31 @@
         this.arenaData = null;
         this.attendData = null;
         this.gameAvgAttendData = null;
+        this.genderData = null;
         this.startTimeData = null;
         this.isStatisticsLoading = true;
 
         await axios.get(`/api/leagues/${leag_no}/statistics`)
           .then((result) => {
-            let nullCnt = 4;
+            let nullCnt = 5;
             const gameStartHour = result.data.data.gameStartHour;
             const arenaUseCount = result.data.data.arenaUseCount;
             const attendanceRate = result.data.data.attendanceRate;
+            const genderRate = result.data.data.genderRate;
             const gameAvgAttend = result.data.data.gameAvgAttend;
             if (arenaUseCount !== null) {
               // this.arenaData = this.getBarChartData(arenaUseCount.labels, arenaUseCount.data, false);
               this.arenaData = arenaUseCount;
               nullCnt--
             }
-            //'doughnut, pie'
             if (attendanceRate !== null) {
               // this.attendData = this.getCicleChartData(attendanceRate.labels, attendanceRate.data, 'doughnut', false);
               this.attendData = attendanceRate;
+              nullCnt--
+            }
+            if (genderRate !== null) {
+              // this.attendData = this.getCicleChartData(attendanceRate.labels, attendanceRate.data, 'doughnut', false);
+              this.genderData = genderRate;
               nullCnt--
             }
             if (gameAvgAttend !== null) {
@@ -240,7 +260,7 @@
               nullCnt--
             }
 
-            if (nullCnt === 4) alert("데이터가 없습니다.")
+            if (nullCnt === 5) alert("데이터가 없습니다.")
           })
           .catch((err) => {
             console.log(err);
