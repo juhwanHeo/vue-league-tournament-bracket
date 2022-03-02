@@ -35,7 +35,28 @@
     </div>
 
     <div v-else>
-
+      <v-row>
+        <v-col
+          v-for="({ actionIcon, actionText, ...attrs }, i) in stats"
+          :key="i"
+          cols="12"
+          md="6"
+          lg="4"
+        >
+          <material-stat-card v-bind="attrs">
+            <template #actions>
+              <v-icon
+                class="mr-2"
+                small
+                v-text="actionIcon"
+              />
+              <div class="text-truncate">
+                {{ actionText }}
+              </div>
+            </template>
+          </material-stat-card>
+        </v-col>
+      </v-row>
 
       <!-- line 1 -->
       <v-row>
@@ -82,6 +103,7 @@
           </my-chart>
         </v-col>
       </v-row>
+
 
       <!-- line 2 -->
       <v-row>
@@ -156,32 +178,33 @@
         startTimeData: null,
         arenaData: null,
         gameAvgAttendData: null ,
-        chartData4: {
-          type: 'doughnut',
-          data: {
-            labels: ['출석','미출석'],
-            datasets: [{
-              backgroundColor: [
-                  CHART_COLORS.red,
-                  CHART_COLORS.blue
-                ],
-              borderColor: 'white',
-              data: [28, 120],
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'bottom',
-              },
-              title: {
-                display: true,
-                text: 'Chart.js Pie Chart'
-              }
-            }
-          }
-        }
+        stats: [
+          // {
+          //   actionIcon: 'mdi-clock',
+          //   actionText: '리그 운영 기간',
+          //   icon: 'mdi-clock',
+          //   color: 'success',
+          //   title: '운영 기간',
+          //   value: '2022.03.02 ~ 2022.05.31',
+          // },
+          // {
+          //   actionIcon: 'mdi-google-controller',
+          //   actionText: '리그 종목 개수',
+          //   color: '#FD9A13',
+          //   icon: 'mdi-google-controller',
+          //   title: '종목 개수',
+          //   value: '4',
+          // },
+          // {
+          //   actionIcon: 'mdi-twitter',
+          //   actionText: '리그 참가 인원',
+          //   color: 'info',
+          //   icon: 'mdi-twitter',
+          //   title: '참가인원',
+          //   value: '245',
+          // },
+
+        ],
       }
     },
     mounted() {
@@ -224,43 +247,72 @@
         this.gameAvgAttendData = null;
         this.genderData = null;
         this.startTimeData = null;
+        this.stats = null;
         this.isStatisticsLoading = true;
 
         await axios.get(`/api/leagues/${leag_no}/statistics`)
           .then((result) => {
-            let nullCnt = 5;
+            let nullCnt = 6;
             const gameStartHour = result.data.data.gameStartHour;
             const arenaUseCount = result.data.data.arenaUseCount;
             const attendanceRate = result.data.data.attendanceRate;
             const genderRate = result.data.data.genderRate;
             const gameAvgAttend = result.data.data.gameAvgAttend;
+            const stats = result.data.data.stats;
+
             if (arenaUseCount !== null) {
-              // this.arenaData = this.getBarChartData(arenaUseCount.labels, arenaUseCount.data, false);
               this.arenaData = arenaUseCount;
               nullCnt--
             }
             if (attendanceRate !== null) {
-              // this.attendData = this.getCicleChartData(attendanceRate.labels, attendanceRate.data, 'doughnut', false);
               this.attendData = attendanceRate;
               nullCnt--
             }
             if (genderRate !== null) {
-              // this.attendData = this.getCicleChartData(attendanceRate.labels, attendanceRate.data, 'doughnut', false);
               this.genderData = genderRate;
               nullCnt--
             }
             if (gameAvgAttend !== null) {
-              // this.gameAvgAttendData = this.getBarChartData(gameAvgAttend.labels, gameAvgAttend.data, false);
               this.gameAvgAttendData = gameAvgAttend;
               nullCnt--
             }
             if (gameStartHour !== null) {
-              // this.startTimeData = this.getLineChartData(gameStartHour.labels, gameStartHour.data);
               this.startTimeData = gameStartHour;
               nullCnt--
             }
 
-            if (nullCnt === 5) alert("데이터가 없습니다.")
+            if (stats !== null) {
+              this.stats = [];
+              this.stats.push({
+                actionIcon: 'mdi-clock',
+                actionText: '리그 운영 기간',
+                icon: 'mdi-clock',
+                color: 'success',
+                title: '운영 기간',
+                value: stats.operatingPeriod,
+              })
+
+              this.stats.push({
+                actionIcon: 'mdi-google-controller',
+                actionText: '리그 종목 개수',
+                color: '#FD9A13',
+                icon: 'mdi-google-controller',
+                title: '종목 개수',
+                value: stats.eventCount + ' 종목',
+              })
+
+              this.stats.push({
+                actionIcon: 'mdi-twitter',
+                actionText: '리그 참가 인원',
+                color: 'info',
+                icon: 'mdi-twitter',
+                title: '참가인원',
+                value: stats.participantCount + '명',
+              })
+              nullCnt--
+            }
+
+            if (nullCnt === 6) alert("데이터가 없습니다.")
           })
           .catch((err) => {
             console.log(err);
